@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="km" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>កម្មវិធីផលិតកិច្ចតែងការបង្រៀនបឋមសិក្សា - ស្តង់ដារក្រសួងអប់រំ យុវជន និងកីឡា</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Khmer -->
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:ital,wght@0,300..700;1,300..700&family=Moul&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        kantumruy: ['"Kantumruy Pro"', 'sans-serif'],
+                        battambang: ['Battambang', 'sans-serif'],
+                        moul: ['Moul', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Kantumruy Pro', 'Battambang', sans-serif;
+        }
+        .font-moul {
+            font-family: 'Moul', cursive;
+        }
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #printable-area, #printable-area * {
+                visibility: visible;
+            }
+            #printable-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10mm 15mm !important;
+                background: white !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 h-full flex flex-col antialiased">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-gradient-to-r from-blue-950 via-indigo-900 to-slate-900 text-white shadow-xl no-print border-b-4 border-amber-500 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3.5">
+                <div class="bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 p-2.5 sm:p-3 rounded-2xl shadow-lg font-bold text-xl sm:text-2xl flex items-center justify-center">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        កម្មវិធីផលិតកិច្ចតែងការបង្រៀនបឋមសិក្សា
+                        <span class="bg-amber-400/20 text-amber-300 text-[11px] px-2 py-0.5 rounded-full border border-amber-400/30 hidden sm:inline">ជំនាន់ ២.០ (MoEYS)</span>
+                    </h1>
+                    <div class="flex items-center gap-2 mt-0.5 text-xs text-slate-300">
+                        <span class="inline-flex items-center gap-1 text-amber-300 font-medium">
+                            <i class="fa-solid fa-graduation-cap text-amber-400"></i> ស្តង់ដារក្រសួងអប់រំ យុវជន និងកីឡា
+                        </span>
+                        <span>|</span>
+                        <span class="text-slate-300">រៀបចំដោយ៖ លោកគ្រូ ឌឹម សារ៉ា</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Action Buttons -->
+            <div class="flex items-center gap-2 flex-wrap justify-center">
+                <button onclick="loadSavedPlansModal()" class="bg-indigo-800 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm border border-indigo-700">
+                    <i class="fa-solid fa-folder-open text-amber-400"></i> កិច្ចតែងការរក្សាទុក (<span id="saved-count-badge">0</span>)
+                </button>
+                <button onclick="backupData()" title="ទាញយកទិន្នន័យបម្រុងទុក" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm border border-slate-700">
+                    <i class="fa-solid fa-cloud-arrow-down text-sky-400"></i> បម្រុងទុក (JSON)
+                </button>
+                <label for="import-json" title="បញ្ចូលទិន្នន័យបម្រុងទុក" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm border border-slate-700">
+                    <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i> បញ្ចូល
+                    <input type="file" id="import-json" accept=".json" class="hidden" onchange="importData(event)">
+                </label>
+                <button onclick="clearForm()" class="bg-rose-950/80 hover:bg-rose-900 text-rose-200 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm border border-rose-800">
+                    <i class="fa-solid fa-rotate-right"></i> សម្អាត
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 overflow-hidden">
+        
+        <!-- Left Column: Input Form -->
+        <section class="lg:col-span-6 bg-white rounded-2xl shadow-xl border border-slate-200 flex flex-col h-[calc(100vh-85px)] overflow-hidden no-print">
+            
+            <!-- Form Header & Smart Assistant Preset Selector -->
+            <div class="bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-indigo-100 px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse"></span>
+                    <h2 class="font-bold text-indigo-950 text-sm sm:text-base flex items-center gap-1.5">
+                        <i class="fa-solid fa-pen-to-square text-indigo-600"></i> បំពេញទិន្នន័យកិច្ចតែងការ
+                    </h2>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="autoFillSmart()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-md transition flex items-center gap-1.5 hover:scale-105 active:scale-95 duration-150">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> បំពេញគំរូស្វ័យប្រវត្តិ (AI)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable Form Inputs -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-4" id="form-container">
+                
+                <!-- Quick Form Selector Help Alert -->
+                <div class="bg-amber-50 border border-amber-200/80 rounded-xl p-3 flex items-start gap-2.5 text-xs text-amber-900 shadow-xs">
+                    <i class="fa-solid fa-lightbulb text-amber-500 text-base mt-0.5"></i>
+                    <div>
+                        <span class="font-bold">គន្លឹះ៖</span> ជ្រើសរើស <strong>«ថ្នាក់ទី»</strong> និង <strong>«មុខវិជ្ជា»</strong> បន្ទាប់មកចុច <strong>«បំពេញគំរូស្វ័យប្រវត្តិ (AI)»</strong> ដើម្បីទទួលបានកិច្ចតែងការពេញលេញភ្លាមៗ!
+                    </div>
+                </div>
+
+                <!-- 1. General Lesson Information -->
+                <div class="bg-slate-50/90 p-4 rounded-xl border border-slate-200/80 space-y-3 shadow-xs">
+                    <h3 class="text-xs sm:text-sm font-bold text-indigo-950 uppercase tracking-wide flex items-center justify-between border-b border-indigo-100 pb-2">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-school text-indigo-600"></i> ១. ព័ត៌មានទូទៅនៃមេរៀន
+                        </span>
+                        <span class="text-[11px] text-slate-500 font-normal">បឋមសិក្សា</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">ថ្នាក់ទី <span class="text-rose-500">*</span></label>
+                            <select id="grade" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" onchange="onGradeOrSubjectChange()">
+                                <option value="ថ្នាក់ទី១">ថ្នាក់ទី១</option>
+                                <option value="ថ្នាក់ទី២">ថ្នាក់ទី២</option>
+                                <option value="ថ្នាក់ទី៣" selected>ថ្នាក់ទី៣</option>
+                                <option value="ថ្នាក់ទី៤">ថ្នាក់ទី៤</option>
+                                <option value="ថ្នាក់ទី៥">ថ្នាក់ទី៥</option>
+                                <option value="ថ្នាក់ទី៦">ថ្នាក់ទី៦</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">មុខវិជ្ជា <span class="text-rose-500">*</span></label>
+                            <select id="subject" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" onchange="onGradeOrSubjectChange()">
+                                <option value="ភាសាខ្មែរ">ភាសាខ្មែរ</option>
+                                <option value="គណវិទ្យា" selected>គណវិទ្យា</option>
+                                <option value="វិទ្យាសាស្ត្រ">វិទ្យាសាស្ត្រ</option>
+                                <option value="សិក្សាសង្គម">សិក្សាសង្គម</option>
+                                <option value="សីលធម៌-ពលរដ្ឋវិជ្ជា">សីលធម៌-ពលរដ្ឋវិជ្ជា</option>
+                                <option value="សិល្បៈទស្សនីយភាព និងតន្ត្រី">សិល្បៈទស្សនីយភាព និងតន្ត្រី</option>
+                                <option value="អប់រំកាយ និងកីឡា">អប់រំកាយ និងកីឡា</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">ជំពូក / មេរៀនទី</label>
+                            <input type="text" id="chapter" value="ជំពូកទី ២ - មេរៀនទី ៥" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">រយៈពេល / ម៉ោងបង្រៀន</label>
+                            <input type="text" id="duration" value="២ ម៉ោង (៨០ នាទី)" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">ចំណងជើងមេរៀន / ចំណងជើងរង</label>
+                            <input type="text" id="lessonTitle" value="ការគុណចំនួនគត់ (ការគុណចំនួនមានលេខ២ខ្ទង់ នឹង១ខ្ទង់)" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold text-indigo-950">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">ឈ្មោះលោកគ្រូ / អ្នកគ្រូ</label>
+                            <input type="text" id="teacherName" value="ឌឹម សារ៉ា" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold text-indigo-900">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">សាលាបឋមសិក្សា</label>
+                            <input type="text" id="schoolName" value="បឋមសិក្សាវត្តបុ័ង" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">ឆ្នាំសិក្សា</label>
+                            <input type="text" id="academicYear" value="២០២៥ - ២០២៦" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">កាលបរិច្ឆេទបង្រៀន</label>
+                            <input type="text" id="lessonDate" value="ថ្ងៃទី ..... ខែ ..... ឆ្នាំ ២០២៦" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Objectives -->
+                <div class="bg-slate-50/90 p-4 rounded-xl border border-slate-200/80 space-y-3 shadow-xs">
+                    <h3 class="text-xs sm:text-sm font-bold text-indigo-950 uppercase tracking-wide flex items-center gap-1.5 border-b border-indigo-100 pb-2">
+                        <i class="fa-solid fa-bullseye text-indigo-600"></i> ២. វត្ថុបំណងនៃមេរៀន (Objectives)
+                    </h3>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ចំណេះដឹង (Knowledge) <span class="text-slate-400 font-normal">- សិស្សអាច...</span></label>
+                        <textarea id="objKnowledge" rows="2" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">សិស្សប្រាប់បានពីរបៀបគុណចំនួនមានលេខ២ខ្ទង់ នឹង១ខ្ទង់ គ្មានត្រាទុក និងមានត្រាទុកបានត្រឹមត្រូវតាមរយៈការពន្យល់របស់គ្រូ។</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">បំណិន / ជំនាញ (Skills) <span class="text-slate-400 font-normal">- សិស្សមានសមត្ថភាព...</span></label>
+                        <textarea id="objSkills" rows="2" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">សិស្សចេះគណនាផលគុណ និងដោះស្រាយលំហាត់ប្រចាំថ្ងៃទាក់ទងនឹងការគុណបានត្រឹមត្រូវតាមក្បួនខ្នាត។</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ឥរិយាបថ / គុណធម៌ (Attitudes) <span class="text-slate-400 font-normal">- អប់រំសិស្សឱ្យ...</span></label>
+                        <textarea id="objAttitudes" rows="2" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">អប់រំសិស្សឱ្យមានភាពផ្ចិតផ្ចង់ ស្វាហាប់ ស្រឡាញ់ការគិតលេខ និងចេះសហការគ្នាក្នុងការងារក្រុម។</textarea>
+                    </div>
+                </div>
+
+                <!-- 3. Materials & References -->
+                <div class="bg-slate-50/90 p-4 rounded-xl border border-slate-200/80 space-y-3 shadow-xs">
+                    <h3 class="text-xs sm:text-sm font-bold text-indigo-950 uppercase tracking-wide flex items-center gap-1.5 border-b border-indigo-100 pb-2">
+                        <i class="fa-solid fa-toolbox text-indigo-600"></i> ៣. សម្ភារឧបទេស និងឯកសារយោង
+                    </h3>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">សម្ភារគ្រូ (Teacher Materials)</label>
+                        <input type="text" id="teacherMaterials" value="សៀវភៅគោល, បន្ទះលេខ, តារាងគុណ, ក្តារខៀន, ដីសពណ៌, វត្ថុជាក់ស្តែង" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">សម្ភារសិស្ស (Student Materials)</label>
+                        <input type="text" id="studentMaterials" value="សៀវភៅសិក្សាគោល, កូនក្តារឆ្នួន, ដីស, សៀវភៅសរសេរ, ប៊ិច, ខ្មៅដៃ" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ឯកសារយោង (References)</label>
+                        <input type="text" id="references" value="សៀវភៅគ្រូ និងសៀវភៅសិស្ស គណវិទ្យាថ្នាក់ទី៣ ក្រសួងអប់រំ យុវជន និងកីឡា" class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- 4. 5-Step Teaching Process (Official MoEYS Structure) -->
+                <div class="bg-slate-50/90 p-4 rounded-xl border border-slate-200/80 space-y-4 shadow-xs">
+                    <div class="border-b border-indigo-100 pb-2 flex justify-between items-center">
+                        <h3 class="text-xs sm:text-sm font-bold text-indigo-950 uppercase tracking-wide flex items-center gap-1.5">
+                            <i class="fa-solid fa-list-ol text-indigo-600"></i> ៤. ដំណើរការបង្រៀនស្តង់ដារក្រសួង (៥ ជំហាន)
+                        </h3>
+                    </div>
+
+                    <!-- Step 1 -->
+                    <div class="bg-white border border-indigo-100 p-3 rounded-xl space-y-2 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                                ជំហានទី១៖ ការរៀបចំថ្នាក់ (២ នាទី)
+                            </span>
+                            <span class="text-[11px] text-slate-500">ពិនិត្យអនាម័យ & អវត្តមាន</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">ខ្លឹមសារមេរៀន</label>
+                                <textarea id="step1_content" rows="2" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">ពិនិត្យអវត្តមាន អនាម័យ និងសណ្តាប់ធ្នាប់ក្នុងថ្នាក់រៀន</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">សកម្មភាពគ្រូ</label>
+                                <textarea id="step1_teacher" rows="2" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">គ្រូឡើងថ្នាក់ ជំរាបសួរសិស្ស ពិនិត្យអវត្តមាន និងរៀបចំសណ្តាប់ធ្នាប់តុ កៅអី និងបរិស្ថានថ្នាក់។</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">សកម្មភាពសិស្ស</label>
+                                <textarea id="step1_student" rows="2" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">ប្រធានថ្នាក់ឡើងរាយការណ៍អវត្តមាន សិស្សានុសិស្សទាំងអស់អង្គុយត្រង់ខ្លួនប្រកបដោយរបៀបរៀបរយ។</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="bg-white border border-indigo-100 p-3 rounded-xl space-y-2 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                                ជំហានទី២៖ រំលឹកមេរៀនចាស់ / ទំនាក់ទំនង (៣ - ៥ នាទី)
+                            </span>
+                            <span class="text-[11px] text-slate-500">កែផ្ទះ & រំលឹក</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">ខ្លឹមសារមេរៀន</label>
+                                <textarea id="step2_content" rows="3" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">រំលឹកការបូកចំនួនដដែលៗ និងតារាងគុណខ្ទង់លេខតូចៗ៖ ៤ + ៤ + ៤ = ៤ × ៣ = ១២</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">សកម្មភាពគ្រូ</label>
+                                <textarea id="step2_teacher" rows="3" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">គ្រូសួរសំណួរ៖ តើ ៤ បូកគ្នា ៣ ដង ស្មើនឹងប៉ុន្មាន? តើយើងអាចសរសេរជាផលគុណយ៉ាងដូចម្តេច?</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">សកម្មភាពសិស្ស</label>
+                                <textarea id="step2_student" rows="3" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">សិស្សលើកដៃស្ម័គ្រចិត្តឆ្លើយ៖ ៤ + ៤ + ៤ = ១២ ឬ ៤ × ៣ = ១២។ សិស្សដទៃផ្ទៀងផ្ទាត់។</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="bg-white border border-indigo-100 p-3 rounded-xl space-y-2 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                                ជំហានទី៣៖ ដំណើរការមេរៀនថ្មី (២៥ - ៣០ នាទី)
+                            </span>
+                            <span class="text-[11px] text-amber-600 font-bold">ខ្លឹមសារស្នូល</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">ខ្លឹមសារមេរៀន</label>
+                                <textarea id="step3_content" rows="4" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">មេរៀនទី ៥៖ ការគុណចំនួនមាន២ខ្ទង់ នឹង១ខ្ទង់
+- ឧទាហរណ៍៖ ២៣ × ៣ = ?
+- របៀបគិត៖
+  ៣ × ៣ = ៩ (ខ្ទង់រាយ)
+  ២ × ៣ = ៦ (ខ្ទង់ដប់)
+  ដូចនេះ ២៣ × ៣ = ៦៩</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">សកម្មភាពគ្រូ</label>
+                                <textarea id="step3_teacher" rows="4" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">គ្រូសរសេរចំណងជើងលើក្តារខៀន បង្ហាញឧទាហរណ៍ និងពន្យល់ពីរបៀបគុណពីខ្ទង់រាយទៅខ្ទង់ដប់។ ណែនាំសិស្សឱ្យអនុវត្តតាមជាជំហានៗ។</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">សកម្មភាពសិស្ស</label>
+                                <textarea id="step3_student" rows="4" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">សិស្សផ្ចង់អារម្មណ៍ស្តាប់ការពន្យល់ កត់ចំណាំក្នុងសៀវភៅ និងឆ្លើយសំណួររបស់គ្រូពេលត្រូវបានហៅ។</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="bg-white border border-indigo-100 p-3 rounded-xl space-y-2 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                                ជំហានទី៤៖ ពង្រឹងពុទ្ធិ / អនុវត្ត (៧ - ១០ នាទី)
+                            </span>
+                            <span class="text-[11px] text-slate-500">ការងារក្រុម / បុគ្គល</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">ខ្លឹមសារមេរៀន</label>
+                                <textarea id="step4_content" rows="3" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">លំហាត់អនុវត្តលើកូនក្តារឆ្នួន៖
+ក. ១២ × ៤ = ?
+ខ. ៣១ × ៣ = ?
+គ. ៤២ × ២ = ?</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">សកម្មភាពគ្រូ</label>
+                                <textarea id="step4_teacher" rows="3" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">ដាក់លំហាត់លើក្តារខៀន ឱ្យសិស្សធ្វើលើក្តារឆ្នួន រួចលើកបង្ហាញព្រមគ្នា។ គ្រូដើរត្រួតពិនិត្យ និងកែតម្រូវ។</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">សកម្មភាពសិស្ស</label>
+                                <textarea id="step4_student" rows="3" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">សិស្សគិតលេខ និងសរសេរចម្លើយលើក្តារឆ្នួនដោយស្វាហាប់ រួចលើកបង្ហាញគ្រូព្រមគ្នា។</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="bg-white border border-indigo-100 p-3 rounded-xl space-y-2 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                                ជំហានទី៥៖ បណ្តាំផ្ញើ / កិច្ចការផ្ទះ (២ - ៣ នាទី)
+                            </span>
+                            <span class="text-[11px] text-slate-500">អប់រំ & កិច្ចការ</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">ខ្លឹមសារមេរៀន</label>
+                                <textarea id="step5_content" rows="3" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">កិច្ចការផ្ទះ៖ លំហាត់លេខ ៣ ទំព័រ ៥២
+អប់រំសុខភាព និងសុវត្ថិភាពចរាចរណ៍ពេលធ្វើដំណើរទៅផ្ទះ</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">សកម្មភាពគ្រូ</label>
+                                <textarea id="step5_teacher" rows="3" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">គ្រូដាក់កិច្ចការផ្ទះ និងផ្តាំផ្ញើសិស្សឱ្យចេះជួយការងារឪពុកម្តាយ និងរំលឹកមេរៀនបន្ថែម។</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">សកម្មភាពសិស្ស</label>
+                                <textarea id="step5_student" rows="3" class="w-full text-xs border border-slate-200 rounded p-1.5 focus:ring-1 focus:ring-indigo-500 focus:outline-none">សិស្សកត់កិច្ចការផ្ទះចូលសៀវភៅ យកចិត្តទុកដាក់ស្តាប់បណ្តាំគ្រូ និងរៀបចំកាបូបរៀន។</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Form Action Footer Bar -->
+            <div class="p-3 bg-slate-100 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <button onclick="saveLessonPlanLocally()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 px-3 rounded-xl shadow transition flex items-center justify-center gap-1.5 text-xs">
+                    <i class="fa-solid fa-floppy-disk"></i> រក្សាទុក
+                </button>
+                <button onclick="exportToWord()" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2 px-3 rounded-xl shadow transition flex items-center justify-center gap-1.5 text-xs">
+                    <i class="fa-solid fa-file-word"></i> ទាញយក Word
+                </button>
+                <button onclick="window.print()" class="bg-indigo-700 hover:bg-indigo-800 text-white font-semibold py-2 px-3 rounded-xl shadow transition flex items-center justify-center gap-1.5 text-xs">
+                    <i class="fa-solid fa-print"></i> បោះពុម្ព / PDF
+                </button>
+                <button onclick="copyDocumentContent()" class="bg-slate-700 hover:bg-slate-800 text-white font-semibold py-2 px-3 rounded-xl shadow transition flex items-center justify-center gap-1.5 text-xs">
+                    <i class="fa-solid fa-copy"></i> ចម្លងអត្ថបទ
+                </button>
+            </div>
+        </section>
+
+        <!-- Right Column: Formal MoEYS Document Preview -->
+        <section class="lg:col-span-6 bg-white rounded-2xl shadow-xl border border-slate-200 flex flex-col h-[calc(100vh-85px)] overflow-hidden">
+            
+            <!-- Preview Controls Bar -->
+            <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-4 py-3 flex flex-wrap justify-between items-center gap-2 no-print">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-signature text-amber-400"></i>
+                    <h2 class="font-bold text-xs sm:text-sm">ទម្រង់កិច្ចតែងការផ្លូវការ (MoEYS Official)</h2>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <!-- Layout Mode Selector -->
+                    <div class="bg-indigo-950/80 p-0.5 rounded-lg border border-indigo-700 flex text-xs">
+                        <button id="btn-layout-table" onclick="setLayoutMode('table')" class="px-2.5 py-1 rounded-md font-semibold bg-amber-500 text-slate-950 transition flex items-center gap-1">
+                            <i class="fa-solid fa-table"></i> តារាងស្តង់ដារ
+                        </button>
+                        <button id="btn-layout-card" onclick="setLayoutMode('card')" class="px-2.5 py-1 rounded-md font-medium text-slate-200 hover:text-white transition flex items-center gap-1">
+                            <i class="fa-solid fa-grip"></i> ប្លង់កាត
+                        </button>
+                    </div>
+
+                    <button onclick="exportToWord()" title="ទាញយកជាឯកសារ Word (.doc)" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-file-arrow-down"></i> Word
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable Formal Document Paper Container -->
+            <div class="flex-1 overflow-y-auto p-3 sm:p-6 bg-slate-200/90">
+                <div id="printable-area" class="bg-white max-w-3xl mx-auto p-6 sm:p-10 rounded-xl shadow-lg border border-slate-300 text-slate-900 text-xs sm:text-[13px] leading-relaxed space-y-5">
+                    
+                    <!-- Official National Header -->
+                    <div class="text-center space-y-1 pb-3">
+                        <p class="font-moul text-xs sm:text-sm tracking-wider text-slate-800">ព្រះរាជាណាចក្រកម្ពុជា</p>
+                        <p class="font-moul text-xs sm:text-sm tracking-wider text-slate-800">ជាតិ សាសនា ព្រះមហាក្សត្រ</p>
+                        <div class="flex justify-center items-center gap-1 py-1">
+                            <span class="w-8 h-[1px] bg-slate-600"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+                            <span class="w-8 h-[1px] bg-slate-600"></span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs pt-1 px-2 font-semibold">
+                            <div class="text-left">
+                                <p class="text-indigo-950 font-bold" id="prev-school">សាលាបឋមសិក្សាវត្តបុ័ង</p>
+                                <p class="text-slate-600 text-[11px]">ក្រសួងអប់រំ យុវជន និងកីឡា</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-slate-700">ឆ្នាំសិក្សា៖ <span id="prev-academic-year">២០២៥ - ២០២៦</span></p>
+                                <p class="text-slate-500 text-[11px]" id="prev-date-top">ថ្ងៃទី ..... ខែ ..... ឆ្នាំ ២០២៦</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson Plan Title Ribbon -->
+                    <div class="border-y-2 border-indigo-950 py-2.5 text-center bg-indigo-50/60">
+                        <h2 class="font-moul text-sm sm:text-base text-indigo-950">កិច្ចតែងការបង្រៀន</h2>
+                        <p class="text-xs font-bold text-indigo-900 mt-0.5" id="prev-subject-grade">
+                            មុខវិជ្ជា៖ គណវិទ្យា | ថ្នាក់ទី៖ ថ្នាក់ទី៣
+                        </p>
+                    </div>
+
+                    <!-- General Info Grid Summary Box -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-slate-50 p-3 rounded-lg border border-slate-300 text-xs">
+                        <div>
+                            <span class="font-bold text-indigo-950">ជំពូក/មេរៀន៖</span>
+                            <p id="prev-chapter" class="text-slate-800">ជំពូកទី ២ - មេរៀនទី ៥</p>
+                        </div>
+                        <div>
+                            <span class="font-bold text-indigo-950">រយៈពេល៖</span>
+                            <p id="prev-duration" class="text-slate-800">២ ម៉ោង (៨០ នាទី)</p>
+                        </div>
+                        <div>
+                            <span class="font-bold text-indigo-950">គ្រូបង្រៀន៖</span>
+                            <p id="prev-teacher" class="font-bold text-indigo-900">ឌឹម សារ៉ា</p>
+                        </div>
+                        <div class="col-span-2 sm:col-span-3 pt-1 border-t border-slate-200">
+                            <span class="font-bold text-indigo-950">ចំណងជើងមេរៀន៖</span>
+                            <span id="prev-lesson-title" class="font-bold text-slate-900 ml-1">ការគុណចំនួនគត់ (ការគុណចំនួនមានលេខ២ខ្ទង់ នឹង១ខ្ទង់)</span>
+                        </div>
+                    </div>
+
+                    <!-- Section I: Objectives -->
+                    <div class="space-y-1.5">
+                        <h3 class="font-bold text-indigo-950 border-b border-slate-300 pb-1 text-xs uppercase tracking-wide flex items-center gap-1.5">
+                            <span class="bg-indigo-900 text-white w-4 h-4 rounded-full inline-flex items-center justify-center text-[10px]">I</span>
+                            វត្ថុបំណងនៃមេរៀន (Objectives)
+                        </h3>
+                        <div class="pl-3 space-y-1 text-xs text-slate-800">
+                            <p><strong class="text-indigo-950">១. ចំណេះដឹង៖</strong> <span id="prev-obj-k">សិស្សប្រាប់បានពីរបៀបគុណចំនួនមានលេខ២ខ្ទង់ នឹង១ខ្ទង់ គ្មានត្រាទុក និងមានត្រាទុកបានត្រឹមត្រូវតាមរយៈការពន្យល់របស់គ្រូ។</span></p>
+                            <p><strong class="text-indigo-950">២. បំណិន / ជំនាញ៖</strong> <span id="prev-obj-s">សិស្សចេះគណនាផលគុណ និងដោះស្រាយលំហាត់ប្រចាំថ្ងៃទាក់ទងនឹងការគុណបានត្រឹមត្រូវតាមក្បួនខ្នាត។</span></p>
+                            <p><strong class="text-indigo-950">៣. ឥរិយាបថ៖</strong> <span id="prev-obj-a">អប់រំសិស្សឱ្យមានភាពផ្ចិតផ្ចង់ ស្វាហាប់ ស្រឡាញ់ការគិតលេខ និងចេះសហការគ្នាក្នុងការងារក្រុម។</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Section II: Materials & References -->
+                    <div class="space-y-1.5">
+                        <h3 class="font-bold text-indigo-950 border-b border-slate-300 pb-1 text-xs uppercase tracking-wide flex items-center gap-1.5">
+                            <span class="bg-indigo-900 text-white w-4 h-4 rounded-full inline-flex items-center justify-center text-[10px]">II</span>
+                            សម្ភារឧបទេស និងឯកសារយោង
+                        </h3>
+                        <div class="pl-3 space-y-1 text-xs text-slate-800">
+                            <p><strong class="text-indigo-950">សម្ភារគ្រូ៖</strong> <span id="prev-teacher-materials">សៀវភៅគោល, បន្ទះលេខ, តារាងគុណ, ក្តារខៀន, ដីសពណ៌, វត្ថុជាក់ស្តែង</span></p>
+                            <p><strong class="text-indigo-950">សម្ភារសិស្ស៖</strong> <span id="prev-student-materials">សៀវភៅសិក្សាគោល, កូនក្តារឆ្នួន, ដីស, សៀវភៅសរសេរ, ប៊ិច, ខ្មៅដៃ</span></p>
+                            <p><strong class="text-indigo-950">ឯកសារយោង៖</strong> <span id="prev-references">សៀវភៅគ្រូ និងសៀវភៅសិស្ស គណវិទ្យាថ្នាក់ទី៣ ក្រសួងអប់រំ យុវជន និងកីឡា</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Section III: Teaching Steps (Dual Format: Table or Cards) -->
+                    <div class="space-y-2">
+                        <h3 class="font-bold text-indigo-950 border-b border-slate-300 pb-1 text-xs uppercase tracking-wide flex items-center gap-1.5">
+                            <span class="bg-indigo-900 text-white w-4 h-4 rounded-full inline-flex items-center justify-center text-[10px]">III</span>
+                            ដំណើរការបង្រៀន និងរៀន (Teaching Process)
+                        </h3>
+
+                        <!-- Official Table Layout (Default & Standard) -->
+                        <div id="preview-table-container" class="overflow-x-auto">
+                            <table class="w-full border-collapse border border-slate-400 text-xs">
+                                <thead>
+                                    <tr class="bg-indigo-100 text-indigo-950 text-center font-bold">
+                                        <th class="border border-slate-400 p-2 w-[16%]">ជំហាន</th>
+                                        <th class="border border-slate-400 p-2 w-[30%]">ខ្លឹមសារមេរៀន</th>
+                                        <th class="border border-slate-400 p-2 w-[27%]">សកម្មភាពគ្រូ</th>
+                                        <th class="border border-slate-400 p-2 w-[27%]">សកម្មភាពសិស្ស</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Step 1 -->
+                                    <tr>
+                                        <td class="border border-slate-400 p-2 align-top font-bold text-indigo-950 bg-slate-50 text-center">
+                                            ជំហានទី១<br><span class="text-[11px] font-normal text-slate-600">(២ នាទី)</span>
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step1-c">
+                                            ពិនិត្យអវត្តមាន អនាម័យ និងសណ្តាប់ធ្នាប់ក្នុងថ្នាក់រៀន
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step1-t">
+                                            គ្រូឡើងថ្នាក់ ជំរាបសួរសិស្ស ពិនិត្យអវត្តមាន និងរៀបចំសណ្តាប់ធ្នាប់តុ កៅអី និងបរិស្ថានថ្នាក់។
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step1-s">
+                                            ប្រធានថ្នាក់ឡើងរាយការណ៍អវត្តមាន សិស្សានុសិស្សទាំងអស់អង្គុយត្រង់ខ្លួនប្រកបដោយរបៀបរៀបរយ។
+                                        </td>
+                                    </tr>
+                                    <!-- Step 2 -->
+                                    <tr class="bg-slate-50/50">
+                                        <td class="border border-slate-400 p-2 align-top font-bold text-indigo-950 bg-slate-50 text-center">
+                                            ជំហានទី២<br><span class="text-[11px] font-normal text-slate-600">(៣-៥ នាទី)</span>
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step2-c">
+                                            រំលឹកការបូកចំនួនដដែលៗ និងតារាងគុណខ្ទង់លេខតូចៗ៖ ៤ + ៤ + ៤ = ៤ × ៣ = ១២
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step2-t">
+                                            គ្រូសួរសំណួរ៖ តើ ៤ បូកគ្នា ៣ ដង ស្មើនឹងប៉ុន្មាន? តើយើងអាចសរសេរជាផលគុណយ៉ាងដូចម្តេច?
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step2-s">
+                                            សិស្សលើកដៃស្ម័គ្រចិត្តឆ្លើយ៖ ៤ + ៤ + ៤ = ១២ ឬ ៤ × ៣ = ១២។ សិស្សដទៃផ្ទៀងផ្ទាត់។
+                                        </td>
+                                    </tr>
+                                    <!-- Step 3 -->
+                                    <tr>
+                                        <td class="border border-slate-400 p-2 align-top font-bold text-indigo-950 bg-slate-50 text-center">
+                                            ជំហានទី៣<br><span class="text-[11px] font-normal text-slate-600">(២៥-៣០ នាទី)</span>
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step3-c">
+                                            មេរៀនទី ៥៖ ការគុណចំនួនមាន២ខ្ទង់ នឹង១ខ្ទង់<br>
+                                            - ឧទាហរណ៍៖ ២៣ × ៣ = ?<br>
+                                            - របៀបគិត៖<br>
+                                            ៣ × ៣ = ៩ (ខ្ទង់រាយ)<br>
+                                            ២ × ៣ = ៦ (ខ្ទង់ដប់)<br>
+                                            ដូចនេះ ២៣ × ៣ = ៦៩
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step3-t">
+                                            គ្រូសរសេរចំណងជើងលើក្តារខៀន បង្ហាញឧទាហរណ៍ និងពន្យល់ពីរបៀបគុណពីខ្ទង់រាយទៅខ្ទង់ដប់។ ណែនាំសិស្សឱ្យអនុវត្តតាមជាជំហានៗ។
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step3-s">
+                                            សិស្សផ្ចង់អារម្មណ៍ស្តាប់ការពន្យល់ កត់ចំណាំក្នុងសៀវភៅ និងឆ្លើយសំណួររបស់គ្រូពេលត្រូវបានហៅ។
+                                        </td>
+                                    </tr>
+                                    <!-- Step 4 -->
+                                    <tr class="bg-slate-50/50">
+                                        <td class="border border-slate-400 p-2 align-top font-bold text-indigo-950 bg-slate-50 text-center">
+                                            ជំហានទី៤<br><span class="text-[11px] font-normal text-slate-600">(៧-១០ នាទី)</span>
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step4-c">
+                                            លំហាត់អនុវត្តលើកូនក្តារឆ្នួន៖<br>
+                                            ក. ១២ × ៤ = ?<br>
+                                            ខ. ៣១ × ៣ = ?<br>
+                                            គ. ៤២ × ២ = ?
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step4-t">
+                                            ដាក់លំហាត់លើក្តារខៀន ឱ្យសិស្សធ្វើលើក្តារឆ្នួន រួចលើកបង្ហាញព្រមគ្នា។ គ្រូដើរត្រួតពិនិត្យ និងកែតម្រូវ។
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step4-s">
+                                            សិស្សគិតលេខ និងសរសេរចម្លើយលើក្តារឆ្នួនដោយស្វាហាប់ រួចលើកបង្ហាញគ្រូព្រមគ្នា។
+                                        </td>
+                                    </tr>
+                                    <!-- Step 5 -->
+                                    <tr>
+                                        <td class="border border-slate-400 p-2 align-top font-bold text-indigo-950 bg-slate-50 text-center">
+                                            ជំហានទី៥<br><span class="text-[11px] font-normal text-slate-600">(២-៣ នាទី)</span>
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step5-c">
+                                            កិច្ចការផ្ទះ៖ លំហាត់លេខ ៣ ទំព័រ ៥២<br>
+                                            អប់រំសុខភាព និងសុវត្ថិភាពចរាចរណ៍ពេលធ្វើដំណើរទៅផ្ទះ
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step5-t">
+                                            គ្រូដាក់កិច្ចការផ្ទះ និងផ្តាំផ្ញើសិស្សឱ្យចេះជួយការងារឪពុកម្តាយ និងរំលឹកមេរៀនបន្ថែម។
+                                        </td>
+                                        <td class="border border-slate-400 p-2 align-top" id="tb-step5-s">
+                                            សិស្សកត់កិច្ចការផ្ទះចូលសៀវភៅ យកចិត្តទុកដាក់ស្តាប់បណ្តាំគ្រូ និងរៀបចំកាបូបរៀន។
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Card Layout (Optional toggle) -->
+                        <div id="preview-card-container" class="space-y-2 hidden">
+                            <div class="border border-slate-300 p-3 rounded-lg bg-slate-50">
+                                <h4 class="font-bold text-indigo-900 mb-1">ជំហានទី១៖ ការរៀបចំថ្នាក់ (២ នាទី)</h4>
+                                <p><strong>ខ្លឹមសារ៖</strong> <span id="cd-step1-c"></span></p>
+                                <p><strong>សកម្មភាពគ្រូ៖</strong> <span id="cd-step1-t"></span></p>
+                                <p><strong>សកម្មភាពសិស្ស៖</strong> <span id="cd-step1-s"></span></p>
+                            </div>
+                            <div class="border border-slate-300 p-3 rounded-lg bg-slate-50">
+                                <h4 class="font-bold text-indigo-900 mb-1">ជំហានទី២៖ រំលឹកមេរៀនចាស់ / ទំនាក់ទំនង (៣-៥ នាទី)</h4>
+                                <p><strong>ខ្លឹមសារ៖</strong> <span id="cd-step2-c"></span></p>
+                                <p><strong>សកម្មភាពគ្រូ៖</strong> <span id="cd-step2-t"></span></p>
+                                <p><strong>សកម្មភាពសិស្ស៖</strong> <span id="cd-step2-s"></span></p>
+                            </div>
+                            <div class="border border-slate-300 p-3 rounded-lg bg-slate-50">
+                                <h4 class="font-bold text-indigo-900 mb-1">ជំហានទី៣៖ ដំណើរការមេរៀនថ្មី (២៥-៣០ នាទី)</h4>
+                                <p><strong>ខ្លឹមសារ៖</strong> <span id="cd-step3-c"></span></p>
+                                <p><strong>សកម្មភាពគ្រូ៖</strong> <span id="cd-step3-t"></span></p>
+                                <p><strong>សកម្មភាពសិស្ស៖</strong> <span id="cd-step3-s"></span></p>
+                            </div>
+                            <div class="border border-slate-300 p-3 rounded-lg bg-slate-50">
+                                <h4 class="font-bold text-indigo-900 mb-1">ជំហានទី៤៖ ពង្រឹងពុទ្ធិ / អនុវត្ត (៧-១០ នាទី)</h4>
+                                <p><strong>ខ្លឹមសារ៖</strong> <span id="cd-step4-c"></span></p>
+                                <p><strong>សកម្មភាពគ្រូ៖</strong> <span id="cd-step4-t"></span></p>
+                                <p><strong>សកម្មភាពសិស្ស៖</strong> <span id="cd-step4-s"></span></p>
+                            </div>
+                            <div class="border border-slate-300 p-3 rounded-lg bg-slate-50">
+                                <h4 class="font-bold text-indigo-900 mb-1">ជំហានទី៥៖ បណ្តាំផ្ញើ / កិច្ចការផ្ទះ (២-៣ នាទី)</h4>
+                                <p><strong>ខ្លឹមសារ៖</strong> <span id="cd-step5-c"></span></p>
+                                <p><strong>សកម្មភាពគ្រូ៖</strong> <span id="cd-step5-t"></span></p>
+                                <p><strong>សកម្មភាពសិស្ស៖</strong> <span id="cd-step5-s"></span></p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Official Signatures Block -->
+                    <div class="pt-6 grid grid-cols-2 text-center text-xs">
+                        <div>
+                            <p class="font-bold">បានឃើញ និងឯកភាព</p>
+                            <p class="font-semibold text-slate-700">នាយក / នាយិកាសាលា</p>
+                            <div class="h-16"></div>
+                            <p class="text-slate-400 font-medium">....................................................</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-700" id="prev-sign-date">ថ្ងៃទី ..... ខែ ..... ឆ្នាំ ២០២៦</p>
+                            <p class="font-semibold text-slate-700">គ្រូបង្រៀន</p>
+                            <div class="h-16"></div>
+                            <p class="font-bold text-indigo-950 text-sm" id="prev-sign-teacher">ឌឹម សារ៉ា</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Saved Plans Modal -->
+    <div id="savedModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-5 space-y-4 shadow-2xl border border-slate-200">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-indigo-950 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-folder-open text-amber-500"></i> កិច្ចតែងការដែលបានរក្សាទុកក្នុងម៉ាស៊ីន
+                </h3>
+                <button onclick="closeSavedPlansModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="relative">
+                <input type="text" id="search-plans" oninput="filterSavedPlans()" placeholder="ស្វែងរកតាមចំណងជើង ឬមុខវិជ្ជា..." class="w-full text-xs sm:text-sm border border-slate-300 rounded-lg pl-8 pr-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-3 text-slate-400 text-xs"></i>
+            </div>
+
+            <div id="saved-list" class="max-h-72 overflow-y-auto space-y-2 text-xs sm:text-sm pr-1">
+                <!-- Dynamically populated -->
+            </div>
+
+            <div class="flex justify-between items-center pt-2 border-t border-slate-100">
+                <button onclick="clearAllSavedPlans()" class="text-rose-600 hover:text-rose-800 text-xs font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-trash-can"></i> លុបទាំងអស់
+                </button>
+                <button onclick="closeSavedPlansModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-1.5 rounded-xl text-xs font-semibold transition">
+                    បិទ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 z-50 text-xs sm:text-sm border border-slate-700">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toast-msg">រក្សាទុកបានជោគជ័យ!</span>
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        // Form field identifiers
+        const formFields = [
+            'grade', 'subject', 'chapter', 'duration', 'lessonTitle',
+            'teacherName', 'schoolName', 'academicYear', 'lessonDate',
+            'objKnowledge', 'objSkills', 'objAttitudes',
+            'teacherMaterials', 'studentMaterials', 'references',
+            'step1_content', 'step1_teacher', 'step1_student',
+            'step2_content', 'step2_teacher', 'step2_student',
+            'step3_content', 'step3_teacher', 'step3_student',
+            'step4_content', 'step4_teacher', 'step4_student',
+            'step5_content', 'step5_teacher', 'step5_student'
+        ];
+
+        // Layout state
+        let currentLayout = 'table'; // 'table' or 'card'
+
+        // Comprehensive Cambodian Primary Curriculum Lesson Templates Library
+        const primaryCurriculum = {
+            'ភាសាខ្មែរ': {
+                'ថ្នាក់ទី១': {
+                    chapter: 'មេរៀនទី ១៥',
+                    title: 'ព្យញ្ជនៈ ន ផ្សំស្រៈ និងការអានពាក្យ',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សស្គាល់រូបរាង អានស្នូរព្យញ្ជនៈ «ន» និងផ្សំជាមួយស្រៈនិស្ស័យបានត្រឹមត្រូវ។',
+                    objS: 'សិស្សអាចអានពាក្យ នា និ នី នោ... និងសរសេរលើកូនក្តារបានយ៉ាងត្រឹមត្រូវ។',
+                    objA: 'បណ្តុះស្មារតីស្រឡាញ់ការអាន និងសរសេរអក្សរជាតិខ្មែរ។',
+                    tMat: 'ប័ណ្ណអក្សរ «ន», តារាងស្រៈ, រូបភាពនាឡិកា នាគ, ក្តារខៀន',
+                    sMat: 'សៀវភៅភាសាខ្មែរថ្នាក់ទី១, កូនក្តារឆ្នួន, ដីស, ជ័រលុប',
+                    ref: 'សៀវភៅភាសាខ្មែរ ថ្នាក់ទី១ ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យវត្តមាន សណ្តាប់ធ្នាប់ និងអនាម័យដៃ', t: 'គ្រូស្វាគមន៍សិស្ស ពិនិត្យអនាម័យក្រចកដៃ និងរៀបចំតុ', s: 'សិស្សបង្ហាញដៃ និងអង្គុយត្រង់ខ្លួន' },
+                    s2: { c: 'រំលឹកព្យញ្ជនៈ «ទ» និង «ធ»', t: 'គ្រូលើកប័ណ្ណអក្សរ ទ ធ ឱ្យសិស្សអាន', s: 'សិស្សអានព្រមគ្នា៖ ទ, ធ' },
+                    s3: { c: 'មេរៀនថ្មី៖ ព្យញ្ជនៈ «ន»\n- បង្ហាញរូបនាឡិកា ទាញរកស្នូរ «ន»\n- ណែនាំការគូសតួអក្សរ ន\n- ផ្សំស្រៈ៖ ន + ា = នា, ន + ី = នី', t: 'គ្រូបង្ហាញរូបភាព ណែនាំរបៀបសរសេរលើក្តារខៀន និងអានជាគំរូ', s: 'សិស្សសង្កេត អានតាមគ្រូ និងសរសេរលើខ្យល់' },
+                    s4: { c: 'អនុវត្តសរសេរលើក្តារឆ្នួនពាក្យ «នា» «នី»', t: 'គ្រូឱ្យសិស្សសរសេរលើក្តារឆ្នួន និងដើរកែតម្រូវ', s: 'សិស្សសរសេរ និងលើកបង្ហាញព្រមគ្នា' },
+                    s5: { c: 'សង្ខេបមេរៀន និងកិច្ចការផ្ទះចម្លងព្យញ្ជនៈ ន ១ ទំព័រ', t: 'គ្រូផ្តាំផ្ញើឱ្យសិស្សហាត់អាននៅផ្ទះបន្ថែម', s: 'សិស្សកត់ចំណាំ និងស្តាប់ការណែនាំ' }
+                },
+                'ថ្នាក់ទី២': {
+                    chapter: 'មេរៀនទី ២០',
+                    title: 'ការអានអត្ថបទ «សួនបន្លែគ្រួសារខ្ញុំ»',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សយល់ន័យពាក្យថ្មី (ជីកដី, ស្រោចទឹក, ជីធម្មជាតិ) និងអត្ថន័យនៃអត្ថបទ។',
+                    objS: 'សិស្សអានអត្ថបទបានរលូន ត្រឹមត្រូវតាមវណ្ណយុត្តិ និងឆ្លើយសំណួរបានត្រឹមត្រូវ។',
+                    objA: 'អប់រំសិស្សឱ្យចេះជួយដាំ និងថែរក្សាបន្លែដើម្បីសុខភាពគ្រួសារ។',
+                    tMat: 'ផ្ទាំងរូបភាពសួនបន្លែ, ប័ណ្ណពាក្យគន្លឹះ, សៀវភៅពុម្ព',
+                    sMat: 'សៀវភៅភាសាខ្មែរថ្នាក់ទី២, កូនក្តារឆ្នួន, ប៊ិច',
+                    ref: 'សៀវភៅភាសាខ្មែរ ថ្នាក់ទី២ ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យអវត្តមាន និងច្រៀងបទ «បន្លែស្រស់ៗ»', t: 'គ្រូនាំសិស្សច្រៀងបទចម្រៀងដើម្បីកំដៅអារម្មណ៍', s: 'សិស្សច្រៀង និងទះដៃរួមគ្នា' },
+                    s2: { c: 'រំលឹកអំណានមេរៀនមុន', t: 'ហៅសិស្ស ២-៣ នាក់ឡើងអានកថាខណ្ឌមេរៀនចាស់', s: 'សិស្សឡើងអាន និងសិស្សដទៃផ្ទៀងស្តាប់' },
+                    s3: { c: 'អត្ថបទ «សួនបន្លែគ្រួសារខ្ញុំ»\n- ពន្យល់ពាក្យ៖ សួនបន្លែ, ជីធម្មជាតិ\n- គ្រូអានជាគំរូ\n- សិស្សអានស្ងាត់ និងអានឮៗ', t: 'គ្រូអានដោយបញ្ចេញសំឡេងច្បាស់ៗ និងពន្យល់ន័យពាក្យ', s: 'សិស្សផ្ទៀងសៀវភៅ អានតាម និងកត់ពាក្យពិបាក' },
+                    s4: { c: 'ឆ្លើយសំណួរស្វែងយល់ពីអត្ថបទជាក្រុម', t: 'ដាក់សំណួរ៖ តើក្នុងសួនមានដាំបន្លែអ្វីខ្លះ?', s: 'សិស្សពិភាក្សាជាក្រុមតូចៗ និងតំណាងក្រុមឆ្លើយ' },
+                    s5: { c: 'កិច្ចការផ្ទះ៖ ចម្លងអត្ថបទ ៤ បន្ទាត់ចូលសៀវភៅ', t: 'គ្រូដាក់កិច្ចការផ្ទះ និងណែនាំសុវត្ថិភាពផ្លូវ', s: 'សិស្សកត់កិច្ចការផ្ទះចូលសៀវភៅ' }
+                },
+                'ថ្នាក់ទី៣': {
+                    chapter: 'ជំពូកទី ១ - មេរៀនទី ៣',
+                    title: 'ការតែងល្បះ និងការប្រើប្រាស់សញ្ញាខណ្ឌ (.) សញ្ញាសួរ (?)',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សប្រាប់បានពីមុខងារនៃសញ្ញាខណ្ឌ និងសញ្ញាសួរក្នុងសំណេរភាសាខ្មែរ។',
+                    objS: 'សិស្សអាចតែងល្បះប្រាប់ និងល្បះសួរបានត្រឹមត្រូវតាមក្បួនវេយ្យាករណ៍។',
+                    objA: 'អប់រំសិស្សឱ្យមានទម្លាប់ប្រុងប្រយ័ត្នក្នុងការប្រើប្រាស់វណ្ណយុត្តិ។',
+                    tMat: 'ប័ណ្ណសញ្ញា (.) (?), កាតល្បះគំរូ, ក្តារខៀន',
+                    sMat: 'សៀវភៅភាសាខ្មែរថ្នាក់ទី៣, កូនក្តារឆ្នួន, សៀវភៅតែងល្បះ',
+                    ref: 'សៀវភៅភាសាខ្មែរ ថ្នាក់ទី៣ ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យវត្តមាន អនាម័យ និងកិច្ចការផ្ទះចាស់', t: 'គ្រូពិនិត្យសៀវភៅកិច្ចការផ្ទះសិស្សមួយចំនួន', s: 'សិស្សលើកសៀវភៅបង្ហាញគ្រូ' },
+                    s2: { c: 'រំលឹកពីផ្នែកសំខាន់ៗនៃល្បះ (ប្រធាន + កិរិយា + កម្មបទ)', t: 'គ្រូសួរ៖ តើល្បះពេញលេញមួយមានធាតុអ្វីខ្លះ?', s: 'សិស្សឆ្លើយ៖ មានប្រធាន កិរិយា និងកម្មបទ' },
+                    s3: { c: 'ការប្រើប្រាស់សញ្ញាខណ្ឌ និងសញ្ញាសួរ\n- សញ្ញាខណ្ឌ (.) ប្រើបញ្ចប់ល្បះប្រាប់\n- សញ្ញាសួរ (?) ប្រើបញ្ចប់ល្បះសួរ\n- ឧទាហរណ៍៖ សុខារៀនសូត្រពូកែ។ តើឯងទៅណា?', t: 'គ្រូសរសេរឧទាហរណ៍លើក្តារខៀន និងពន្យល់ពីការបញ្ចេញសំឡេង', s: 'សិស្សស្តាប់ អានឧទាហរណ៍ និងធ្វើការប្រៀបធៀប' },
+                    s4: { c: 'លំហាត់តែងល្បះសួរ និងល្បះប្រាប់លើក្តារឆ្នួន', t: 'គ្រូឱ្យសិស្សតែងល្បះប្រាប់ ១ និងល្បះសួរ ១', s: 'សិស្សសរសេរលើក្តារឆ្នួន រួចលើកបង្ហាញ' },
+                    s5: { c: 'សង្ខេបមេរៀន និងកិច្ចការផ្ទះតែងល្បះ ៣ ល្បះ', t: 'គ្រូសង្ខេបមេរៀន និងដាក់កិច្ចការផ្ទះ', s: 'សិស្សកត់ត្រាទុកក្នុងសៀវភៅ' }
+                },
+                'default': {
+                    chapter: 'មេរៀនទី ៨',
+                    title: 'ការអានអត្ថបទ និងវេយ្យាករណ៍ភាសាខ្មែរ',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សយល់ច្បាស់ពីខ្លឹមសារអត្ថបទ និងក្បួនវេយ្យាករណ៍ដែលបានរៀន។',
+                    objS: 'សិស្សអាចអាន វិភាគសំណួរ និងសរសេរសេចក្តីឆ្លើយតបបានយ៉ាងត្រឹមត្រូវ។',
+                    objA: 'អប់រំសិស្សឱ្យស្រឡាញ់ភាសាជាតិ មានទំនួលខុសត្រូវក្នុងការសិក្សា។',
+                    tMat: 'សៀវភៅសិក្សាគោល, កាតពាក្យ, ក្តារខៀន',
+                    sMat: 'សៀវភៅសរសេរ, ប៊ិច, កូនក្តារឆ្នួន',
+                    ref: 'សៀវភៅភាសាខ្មែរ ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យអវត្តមាន និងសណ្តាប់ធ្នាប់ថ្នាក់', t: 'គ្រូពិនិត្យអវត្តមាន និងរៀបចំតុរៀន', s: 'សិស្សរៀបចំខ្លួនស្តាប់ការបង្រៀន' },
+                    s2: { c: 'រំលឹកមេរៀនចាស់', t: 'គ្រូសួរសំណួរមេរៀនមុន', s: 'សិស្សស្ម័គ្រចិត្តឆ្លើយ' },
+                    s3: { c: 'ដំណើរការមេរៀនថ្មី៖ ការអានអត្ថបទ និងពន្យល់ពាក្យគន្លឹះ', t: 'គ្រូពន្យល់ និងណែនាំសិស្សពិភាក្សាខ្លឹមសារ', s: 'សិស្សកត់ត្រា និងពិភាក្សាជាក្រុម' },
+                    s4: { c: 'អនុវត្តលំហាត់ពង្រឹងចំណេះដឹង', t: 'ដាក់លំហាត់ឱ្យសិស្សធ្វើ', s: 'សិស្សអនុវត្តលំហាត់' },
+                    s5: { c: 'សង្ខេប និងកិច្ចការផ្ទះ', t: 'គ្រូដាក់កិច្ចការផ្ទះ និងអប់រំទូទៅ', s: 'សិស្សកត់កិច្ចការផ្ទះ' }
+                }
+            },
+            'គណវិទ្យា': {
+                'ថ្នាក់ទី១': {
+                    chapter: 'មេរៀនទី ៦',
+                    title: 'ការបូកចំនួនត្រឹម ១០ (ការប្រើសញ្ញា + និង =)',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សស្គាល់សញ្ញាបូក (+) សញ្ញាស្មើ (=) និងយល់ពីអត្ថន័យនៃការប្រមូលផ្តុំវត្ថុ។',
+                    objS: 'សិស្សអាចគណនាផលបូកចំនួនត្រឹម ១០ ដោយប្រើវត្ថុជាក់ស្តែង និងម្រាមដៃ។',
+                    objA: 'បណ្តុះចំណាប់អារម្មណ៍សិស្សឱ្យចូលចិត្តរាប់ និងគិតលេខ។',
+                    tMat: 'គ្រាប់កែវ, ផ្លែឈើជ័រ, ប័ណ្ណលេខ ០-១០, ក្តារខៀន',
+                    sMat: 'សៀវភៅគណវិទ្យាថ្នាក់ទី១, គ្រាប់រាប់, កូនក្តារឆ្នួន',
+                    ref: 'សៀវភៅគណវិទ្យា ថ្នាក់ទី១ ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យវត្តមាន និងច្រៀងចម្រៀង «លេខ ១ ដល់ ១០»', t: 'គ្រូនាំសិស្សច្រៀងចម្រៀងរាប់លេខ', s: 'សិស្សច្រៀង និងលើកម្រាមដៃតាមចង្វាក់' },
+                    s2: { c: 'រំលឹកការរាប់ចំនួនពី ១ ដល់ ១០', t: 'គ្រូបង្ហាញគ្រាប់កែវឱ្យសិស្សរាប់', s: 'សិស្សរាប់ឮៗរួមគ្នា' },
+                    s3: { c: 'ការបូកចំនួនត្រឹម ១០៖\n- បង្ហាញផ្លែប៉ោម ២ បូកថែម ៣ ស្មើ ៥\n- សរសេរ៖ ២ + ៣ = ៥\n- ណែនាំសញ្ញា (+) និង (=)', t: 'គ្រូធ្វើបង្ហាញជាក់ស្តែង និងសរសេរបង្ហាញលើក្តារខៀន', s: 'សិស្សសង្កេត យកគ្រាប់រាប់ធ្វើតាម និងអាន៖ ២ បូក ៣ ស្មើ ៥' },
+                    s4: { c: 'លំហាត់អនុវត្ត៖ ៤ + ២ = ?, ៥ + ១ = ?', t: 'គ្រូដាក់លំហាត់លើក្តារខៀន ឱ្យសិស្សធ្វើលើក្តារឆ្នួន', s: 'សិស្សប្រើគ្រាប់រាប់ គិតលេខ និងលើកក្តារឆ្នួន' },
+                    s5: { c: 'សង្ខេបមេរៀន និងកិច្ចការផ្ទះលំហាត់ទំព័រ ២៥', t: 'គ្រូសង្ខេបរបៀបបូក និងដាក់កិច្ចការផ្ទះ', s: 'សិស្សកត់កិច្ចការផ្ទះ' }
+                },
+                'ថ្នាក់ទី២': {
+                    chapter: 'មេរៀនទី ៨',
+                    title: 'ការបូកចំនួនមានលេខ២ខ្ទង់ គ្មានត្រាទុក',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សយល់ពីរបៀបបូកពីខ្ទង់រាយទៅខ្ទង់ដប់។',
+                    objS: 'សិស្សអាចគណនាផលបូកជួរដេក និងជួរបញ្ឈរបានយ៉ាងត្រឹមត្រូវ។',
+                    objA: 'អប់រំឱ្យសិស្សមានភាពផ្ចិតផ្ចង់ក្នុងការតម្រៀបខ្ទង់លេខឱ្យត្រូវជួរ។',
+                    tMat: 'បន្ទះខ្ទង់រាយ និងខ្ទង់ដប់, ក្តារខៀន, ប័ណ្ណលំហាត់',
+                    sMat: 'សៀវភៅគណវិទ្យាថ្នាក់ទី២, កូនក្តារឆ្នួន, ប៊ិច',
+                    ref: 'សៀវភៅគណវិទ្យា ថ្នាក់ទី២ ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យអវត្តមាន និងសណ្តាប់ធ្នាប់តុរៀន', t: 'គ្រូពិនិត្យអវត្តមាន និងរៀបចំតុ', s: 'សិស្សអង្គុយរបៀបរៀបរយ' },
+                    s2: { c: 'រំលឹកការបូកលេខ១ខ្ទង់ និងការបំបែកខ្ទង់', t: 'គ្រូសួរ៖ ២៥ មានប៉ុន្មានដប់ និងប៉ុន្មានរាយ?', s: 'សិស្សឆ្លើយ៖ ២ ដប់ និង ៥ រាយ' },
+                    s3: { c: 'ការបូក ២៤ + ១៣ = ?\n- ជំហានទី១៖ បូកខ្ទង់រាយ (៤ + ៣ = ៧)\n- ជំហានទី២៖ បូកខ្ទង់ដប់ (២ + ១ = ៣)\n- ដូចនេះ ២៤ + ១៣ = ៣៧', t: 'គ្រូពន្យល់តាមតារាងតម្លៃលេខ និងរបៀបដាក់ជួរបញ្ឈរ', s: 'សិស្សសង្កេត កត់ត្រា និងអានតាមគ្រូ' },
+                    s4: { c: 'អនុវត្តលំហាត់ជួរបញ្ឈរលើក្តារឆ្នួន (៣២ + ៤៥ = ?)', t: 'គ្រូឱ្យសិស្សធ្វើលំហាត់លើក្តារឆ្នួន', s: 'សិស្សគណនា និងបង្ហាញគ្រូ' },
+                    s5: { c: 'កិច្ចការផ្ទះលំហាត់លេខ ២ ទំព័រ ៤០', t: 'គ្រូដាក់កិច្ចការផ្ទះ', s: 'សិស្សកត់ត្រាកិច្ចការផ្ទះ' }
+                },
+                'ថ្នាក់ទី៣': {
+                    chapter: 'ជំពូកទី ២ - មេរៀនទី ៥',
+                    title: 'ការគុណចំនួនគត់ (ការគុណចំនួនមានលេខ២ខ្ទង់ នឹង១ខ្ទង់)',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សប្រាប់បានពីរបៀបគុណចំនួនមានលេខ២ខ្ទង់ នឹង១ខ្ទង់ គ្មានត្រាទុក និងមានត្រាទុកបានត្រឹមត្រូវតាមរយៈការពន្យល់របស់គ្រូ។',
+                    objS: 'សិស្សចេះគណនាផលគុណ និងដោះស្រាយលំហាត់ប្រចាំថ្ងៃទាក់ទងនឹងការគុណបានត្រឹមត្រូវតាមក្បួនខ្នាត។',
+                    objA: 'អប់រំសិស្សឱ្យមានភាពផ្ចិតផ្ចង់ ស្វាហាប់ ស្រឡាញ់ការគិតលេខ និងចេះសហការគ្នាក្នុងការងារក្រុម។',
+                    tMat: 'សៀវភៅគោល, បន្ទះលេខ, តារាងគុណ, ក្តារខៀន, ដីសពណ៌, វត្ថុជាក់ស្តែង',
+                    sMat: 'សៀវភៅសិក្សាគោល, កូនក្តារឆ្នួន, ដីស, សៀវភៅសរសេរ, ប៊ិច, ខ្មៅដៃ',
+                    ref: 'សៀវភៅគ្រូ និងសៀវភៅសិស្ស គណវិទ្យាថ្នាក់ទី៣ ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យអវត្តមាន អនាម័យ និងសណ្តាប់ធ្នាប់ក្នុងថ្នាក់រៀន', t: 'គ្រូឡើងថ្នាក់ ជំរាបសួរសិស្ស ពិនិត្យអវត្តមាន និងរៀបចំសណ្តាប់ធ្នាប់តុ កៅអី និងបរិស្ថានថ្នាក់។', s: 'ប្រធានថ្នាក់ឡើងរាយការណ៍អវត្តមាន សិស្សានុសិស្សទាំងអស់អង្គុយត្រង់ខ្លួនប្រកបដោយរបៀបរៀបរយ។' },
+                    s2: { c: 'រំលឹកការបូកចំនួនដដែលៗ និងតារាងគុណខ្ទង់លេខតូចៗ៖ ៤ + ៤ + ៤ = ៤ × ៣ = ១២', t: 'គ្រូសួរសំណួរ៖ តើ ៤ បូកគ្នា ៣ ដង ស្មើនឹងប៉ុន្មាន? តើយើងអាចសរសេរជាផលគុណយ៉ាងដូចម្តេច?', s: 'សិស្សលើកដៃស្ម័គ្រចិត្តឆ្លើយ៖ ៤ + ៤ + ៤ = ១២ ឬ ៤ × ៣ = ១២។ សិស្សដទៃផ្ទៀងផ្ទាត់។' },
+                    s3: { c: 'មេរៀនទី ៥៖ ការគុណចំនួនមាន២ខ្ទង់ នឹង១ខ្ទង់\n- ឧទាហរណ៍៖ ២៣ × ៣ = ?\n- របៀបគិត៖\n  ៣ × ៣ = ៩ (ខ្ទង់រាយ)\n  ២ × ៣ = ៦ (ខ្ទង់ដប់)\n  ដូចនេះ ២៣ × ៣ = ៦៩', t: 'គ្រូសរសេរចំណងជើងលើក្តារខៀន បង្ហាញឧទាហរណ៍ និងពន្យល់ពីរបៀបគុណពីខ្ទង់រាយទៅខ្ទង់ដប់។ ណែនាំសិស្សឱ្យអនុវត្តតាមជាជំហានៗ។', s: 'សិស្សផ្ចង់អារម្មណ៍ស្តាប់ការពន្យល់ កត់ចំណាំក្នុងសៀវភៅ និងឆ្លើយសំណួររបស់គ្រូពេលត្រូវបានហៅ។' },
+                    s4: { c: 'លំហាត់អនុវត្តលើកូនក្តារឆ្នួន៖\nក. ១២ × ៤ = ?\nខ. ៣១ × ៣ = ?\nគ. ៤២ × ២ = ?', t: 'ដាក់លំហាត់លើក្តារខៀន ឱ្យសិស្សធ្វើលើក្តារឆ្នួន រួចលើកបង្ហាញព្រមគ្នា។ គ្រូដើរត្រួតពិនិត្យ និងកែតម្រូវ។', s: 'សិស្សគិតលេខ និងសរសេរចម្លើយលើក្តារឆ្នួនដោយស្វាហាប់ រួចលើកបង្ហាញគ្រូព្រមគ្នា។' },
+                    s5: { c: 'កិច្ចការផ្ទះ៖ លំហាត់លេខ ៣ ទំព័រ ៥២\nអប់រំសុខភាព និងសុវត្ថិភាពចរាចរណ៍ពេលធ្វើដំណើរទៅផ្ទះ', t: 'គ្រូដាក់កិច្ចការផ្ទះ និងផ្តាំផ្ញើសិស្សឱ្យចេះជួយការងារឪពុកម្តាយ និងរំលឹកមេរៀនបន្ថែម។', s: 'សិស្សកត់កិច្ចការផ្ទះចូលសៀវភៅ យកចិត្តទុកដាក់ស្តាប់បណ្តាំគ្រូ និងរៀបចំកាបូបរៀន។' }
+                },
+                'default': {
+                    chapter: 'មេរៀនទី ១០',
+                    title: 'ប្រភាគ និងការប្រៀបធៀបប្រភាគ',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សយល់ពីភាគយក ភាគបែង និងការប្រៀបធៀបប្រភាគដែលមានភាគបែងដូចគ្នា។',
+                    objS: 'សិស្សអាចប្រៀបធៀប និងគណនាប្រភាគបានត្រឹមត្រូវ។',
+                    objA: 'អប់រំសិស្សឱ្យមានភាពម៉ត់ចត់ និងចេះសហការគ្នាក្នុងក្រុម។',
+                    tMat: 'គំរូរង្វង់ប្រភាគ, បន្ទះក្រដាសបត់, ក្តារខៀន',
+                    sMat: 'សៀវភៅសិក្សាគោល, បន្ទាត់, កូនក្តារឆ្នួន',
+                    ref: 'សៀវភៅគណវិទ្យា ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យអវត្តមាន និងរៀបចំថ្នាក់', t: 'គ្រូពិនិត្យអវត្តមាន និងរៀបចំថ្នាក់', s: 'សិស្សអង្គុយរៀបរយ' },
+                    s2: { c: 'រំលឹកមេរៀនប្រភាគ', t: 'គ្រូបង្ហាញរូបភាពប្រភាគកន្លះ (១/២)', s: 'សិស្សឆ្លើយ' },
+                    s3: { c: 'ការប្រៀបធៀបប្រភាគភាគបែងដូចគ្នា (២/៤ និង ៣/៤)', t: 'គ្រូពន្យល់ដោយប្រើរូបភាពជាក់ស្តែង', s: 'សិស្សសង្កេត និងកត់ត្រា' },
+                    s4: { c: 'លំហាត់អនុវត្តប្រៀបធៀបដោយប្រើសញ្ញា > < =', t: 'គ្រូដាក់លំហាត់លើក្តារខៀន', s: 'សិស្សធ្វើលើក្តារឆ្នួន' },
+                    s5: { c: 'សង្ខេប និងកិច្ចការផ្ទះ', t: 'គ្រូដាក់កិច្ចការផ្ទះ', s: 'សិស្សកត់ត្រាទុក' }
+                }
+            },
+            'វិទ្យាសាស្ត្រ': {
+                'default': {
+                    chapter: 'ជំពូកទី ៣ - មេរៀនទី ១',
+                    title: 'តម្រូវការចាំបាច់របស់រុក្ខជាតិ (ពន្លឺ ទឹក ខ្យល់ និងជីជាតិដី)',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សអាចរៀបរាប់ពីតម្រូវការសំខាន់ៗ ៤ យ៉ាងដែលរុក្ខជាតិត្រូវការដើម្បីលូតលាស់។',
+                    objS: 'សិស្សអាចធ្វើការសង្កេត និងពិសោធន៍សាមញ្ញប្រៀបធៀបរុក្ខជាតិត្រូវពន្លឺ និងមិនត្រូវពន្លឺ។',
+                    objA: 'បណ្តុះស្មារតីស្រឡាញ់ធម្មជាតិ ដើមឈើ និងបរិស្ថានបៃតងជុំវិញខ្លួន។',
+                    tMat: 'ថូផ្កា ២ (មួយស្រស់ មួយស្រពោន), ទឹក, គំរូដី, ក្តារខៀន',
+                    sMat: 'សៀវភៅវិទ្យាសាស្ត្រ, សៀវភៅកត់ត្រា, ខ្មៅដៃ',
+                    ref: 'សៀវភៅវិទ្យាសាស្ត្រ និងបច្ចេកវិទ្យា ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យអវត្តមាន និងច្រៀងបទ «ដាំដើមឈើ»', t: 'គ្រូនាំសិស្សច្រៀងចម្រៀងស្រឡាញ់បរិស្ថាន', s: 'សិស្សច្រៀង និងទះដៃរួមគ្នា' },
+                    s2: { c: 'រំលឹកពីផ្នែកផ្សេងៗរបស់រុក្ខជាតិ (ឫស ដើម ស្លឹក ផ្កា ផ្លែ)', t: 'គ្រូសួរ៖ តើផ្នែកណាខ្លះនៃរុក្ខជាតិដែលស្រូបយកទឹក?', s: 'សិស្សឆ្លើយ៖ គឺឫសរុក្ខជាតិ' },
+                    s3: { c: 'មេរៀនថ្មី៖ តម្រូវការរបស់រុក្ខជាតិ\n- ពន្លឺព្រះអាទិត្យសម្រាប់ធ្វើរស្មីសំយោគ\n- ទឹក និងជីជាតិដីសម្រាប់ចិញ្ចឹមដើម\n- ខ្យល់សម្រាប់ដកដង្ហើម', t: 'គ្រូបង្ហាញថូផ្កាទាំងពីរ ពន្យល់ និងសួរសំណួរជំរុញការគិត', s: 'សិស្សសង្កេត ពិភាក្សា និងកត់ត្រាចំណុចសំខាន់ៗ' },
+                    s4: { c: 'ពិភាក្សាជាក្រុម៖ ចុះបើយើងទុកកូនរុក្ខជាតិក្នុងបន្ទប់ងងឹត តើមានអ្វីកើតឡើង?', t: 'គ្រូបែងចែកជា ៤ ក្រុម និងដើរសម្របសម្រួល', s: 'សិស្សពិភាក្សា និងឡើងរាយការណ៍ចម្លើយ' },
+                    s5: { c: 'សង្ខេបមេរៀន និងផ្តាំផ្ញើឱ្យសិស្សស្រោចទឹកដំណាំនៅផ្ទះ', t: 'គ្រូសង្ខេប និងអប់រំឱ្យចូលរួមដាំកូនឈើ', s: 'សិស្សកត់ត្រាទុក' }
+                }
+            },
+            'សិក្សាសង្គម': {
+                'default': {
+                    chapter: 'ជំពូកទី ២ - មេរៀនទី ២',
+                    title: 'ភូមិដ្ឋានខ្ញុំ និងមុខរបររបស់អ្នកភូមិ',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សស្គាល់ពីទីតាំងភូមិដ្ឋាន និងមុខរបរសំខាន់ៗរបស់អ្នកភូមិ (កសិករ អាជីវករ គ្រូបង្រៀន...)។',
+                    objS: 'សិស្សអាចគូរផែនទីសាមញ្ញបង្ហាញពីទីតាំងផ្ទះ សាលារៀន និងវត្តអារាមក្នុងភូមិ។',
+                    objA: 'អប់រំសិស្សឱ្យចេះស្រឡាញ់ភូមិកំណើត និងគោរពគ្រប់មុខរបរស្របច្បាប់។',
+                    tMat: 'រូបភាពទេសភាពភូមិ, រូបភាពមុខរបរផ្សេងៗ, ក្រដាសផ្ទាំងធំ',
+                    sMat: 'សៀវភៅសិក្សាសង្គម, ប៊ិចពណ៌, បន្ទាត់',
+                    ref: 'សៀវភៅសិក្សាសង្គម ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យវត្តមាន និងសណ្តាប់ធ្នាប់ថ្នាក់', t: 'គ្រូពិនិត្យវត្តមាន និងសួរសុខទុក្ខសិស្ស', s: 'សិស្សឆ្លើយតបប្រកបដោយការគួរសម' },
+                    s2: { c: 'រំលឹកពីគ្រួសារ និងសមាជិកគ្រួសារ', t: 'គ្រូសួរ៖ តើឪពុកម្តាយប្អូនប្រកបមុខរបរអ្វីខ្លះ?', s: 'សិស្សស្ម័គ្រចិត្តឆ្លើយ' },
+                    s3: { c: 'មេរៀនថ្មី៖ ភូមិដ្ឋាន និងមុខរបរ\n- និយមន័យនៃភូមិ\n- មុខរបរកសិកម្ម (ធ្វើស្រែ ចម្ការ ចិញ្ចឹមសត្វ)\n- មុខរបរសេវាកម្ម និងជំនួញ', t: 'គ្រូបង្ហាញរូបភាព និងពន្យល់ពីតម្លៃនៃមុខរបរនីមួយៗ', s: 'សិស្សសង្កេតរូបភាព និងបញ្ចេញមតិយោបល់' },
+                    s4: { c: 'សកម្មភាពគូររូបភាពមុខរបរដែលខ្លួនពេញចិត្ត', t: 'គ្រូឱ្យសិស្សគូរ និងសរសេរឈ្មោះមុខរបរ', s: 'សិស្សគូររូប និងបង្ហាញមិត្តភក្តិ' },
+                    s5: { c: 'សង្ខេបមេរៀន និងអប់រំឱ្យស្រឡាញ់សាមគ្គីភាពក្នុងភូមិ', t: 'គ្រូសង្ខេបមេរៀន និងផ្តាំផ្ញើ', s: 'សិស្សកត់ត្រា និងត្រៀមត្រឡប់ទៅផ្ទះ' }
+                }
+            },
+            'សីលធម៌-ពលរដ្ឋវិជ្ជា': {
+                'default': {
+                    chapter: 'មេរៀនទី ៤',
+                    title: 'ការគោរពវិន័យសាលារៀន និងការចេះជួយគ្នាទៅវិញទៅមក',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សយល់ដឹងពីបទបញ្ជាផ្ទៃក្នុងរបស់សាលា និងសារៈសំខាន់នៃការជួយគ្នា។',
+                    objS: 'សិស្សអនុវត្តបាននូវការគោរពទង់ជាតិ ការគោរពលោកគ្រូអ្នកគ្រូ និងមិត្តភក្តិ។',
+                    objA: 'បណ្តុះគុណធម៌ សីលធម៌ល្អ និងភាពស្មោះត្រង់ក្នុងចិត្តគំនិត។',
+                    tMat: 'ផ្ទាំងបទបញ្ជាផ្ទៃក្នុងសាលា, រូបភាពសកម្មភាពល្អៗ',
+                    sMat: 'សៀវភៅសិក្សា, សៀវភៅសរសេរ',
+                    ref: 'សៀវភៅសីលធម៌-ពលរដ្ឋវិជ្ជា ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យវត្តមាន និងអនាម័យទូទៅ', t: 'គ្រូពិនិត្យសណ្តាប់ធ្នាប់ និងការស្លៀកពាក់ឯកសណ្ឋាន', s: 'សិស្សឈរត្រង់ខ្លួនគោរព' },
+                    s2: { c: 'រំលឹកពីការគួរសមពេលជួបមនុស្សចាស់', t: 'គ្រូសួរ៖ ពេលជួបលោកគ្រូអ្នកគ្រូ តើត្រូវធ្វើដូចម្តេច?', s: 'សិស្សឆ្លើយ៖ ត្រូវលើកដៃសំពះជំរាបសួរ' },
+                    s3: { c: 'មេរៀនថ្មី៖ ការគោរពវិន័យសាលា\n- មកសាលាឱ្យទាន់ពេល\n- មិនបោះសំរាមពាសវាលពាសកាល\n- សាមគ្គីជួយមិត្តភក្តិ', t: 'គ្រូពន្យល់ និងលើកយកឧទាហរណ៍ជាក់ស្តែងមកបង្ហាញ', s: 'សិស្សស្តាប់ និងចូលរួមបញ្ចេញគំនិត' },
+                    s4: { c: 'លេងល្បែងដើរតួ (Role-play) អំពីការជួយសិស្សដួល', t: 'គ្រូណែនាំសិស្ស ២ នាក់ឱ្យដើរតួជួយគ្នា', s: 'សិស្សសម្តែង និងសិស្សដទៃទះដៃគាំទ្រ' },
+                    s5: { c: 'សង្ខេបមេរៀន និងកិច្ចសន្យាធ្វើជាកូនល្អសិស្សល្អ', t: 'គ្រូផ្តាំផ្ញើឱ្យយកទៅអនុវត្តទាំងនៅផ្ទះ និងសាលា', s: 'សិស្សសន្យា និងកត់ត្រា' }
+                }
+            },
+            'សិល្បៈទស្សនីយភាព និងតន្ត្រី': {
+                'default': {
+                    chapter: 'មេរៀនទី ២',
+                    title: 'ការគូររូប និងផាត់ពណ៌ទង់ជាតិកម្ពុជា',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សស្គាល់ពណ៌ទាំង ៣ នៃទង់ជាតិកម្ពុជា និងនិមិត្តសញ្ញាប្រាសាទអង្គរវត្ត។',
+                    objS: 'សិស្សអាចគូរ និងផាត់ពណ៌ខៀវ ក្រហម និងរូបប្រាសាទអង្គរវត្តបានត្រឹមត្រូវ។',
+                    objA: 'បណ្តុះស្មារតីស្នេហាជាតិ និងមោទនភាពចំពោះទង់ជាតិខ្មែរ។',
+                    tMat: 'គំរូទង់ជាតិជាក់ស្តែង, ពណ៌ទៀន, ក្តារខៀន',
+                    sMat: 'ក្រដាសគំនូរ A4, បន្ទាត់, ខ្មៅដៃ, ជ័រលុប, ពណ៌ទៀន/ពណ៌ទឹក',
+                    ref: 'សៀវភៅសិល្បៈ ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យវត្តមាន និងច្រៀងបទនគររាជ', t: 'គ្រូនាំសិស្សច្រៀងបទចម្រៀងជាតិ', s: 'សិស្សច្រៀងយ៉ាងអង់អាចក្លាហាន' },
+                    s2: { c: 'រំលឹកពីពណ៌ចម្បងៗ (ខៀវ ក្រហម លឿង)', t: 'គ្រូបង្ហាញពណ៌ផ្សេងៗឱ្យសិស្សប្រាប់ឈ្មោះ', s: 'សិស្សឆ្លើយឈ្មោះពណ៌' },
+                    s3: { c: 'ការគូរទង់ជាតិកម្ពុជា\n- ឆ្នូតខៀវសងខាង (តំណាងសេរីភាព)\n- ឆ្នូតក្រហមកណ្តាល (តំណាងភាពក្លាហាន)\n- ប្រាសាទអង្គរវត្តពណ៌ស (តំណាងសន្តិភាព និងយុត្តិធម៌)', t: 'គ្រូគូរបង្ហាញលើក្តារខៀនមួយជំហានម្តងៗ', s: 'សិស្សសង្កេត និងគូសតាមក្នុងក្រដាសរបស់ខ្លួន' },
+                    s4: { c: 'សកម្មភាពផាត់ពណ៌ឱ្យស្អាតមិនឱ្យចេញក្រៅបន្ទាត់', t: 'គ្រូដើរជួយណែនាំសិស្សដែលផាត់មិនទាន់ស្ទាត់', s: 'សិស្សផ្ចិតផ្ចង់ផាត់ពណ៌' },
+                    s5: { c: 'ដាក់តាំងពិព័រណ៍ស្នាដៃសិស្ស និងសរសើរលើកទឹកចិត្ត', t: 'គ្រូជ្រើសរើសរូបស្អាតៗមកបង្ហាញ និងសរសើរ', s: 'សិស្សទះដៃ និងរក្សាទុកគំនូរ' }
+                }
+            },
+            'អប់រំកាយ និងកីឡា': {
+                'default': {
+                    chapter: 'មេរៀនទី ១',
+                    title: 'កាយសម្បទា៖ ការតម្រង់ជួរ និងចលនាដកដង្ហើម',
+                    duration: '២ ម៉ោង (៨០ នាទី)',
+                    objK: 'សិស្សយល់ពីរបៀបតម្រង់ជួរឈរ ជួរដេក និងអត្ថប្រយោជន៍នៃចលនាដកដង្ហើមស្រូបយកខ្យល់បរិសុទ្ធ។',
+                    objS: 'សិស្សអាចតម្រង់ជួរបានរហ័ស ស្មើគ្នា និងធ្វើចលនាកាយវិការបានស្ទាត់ជំនាញ។',
+                    objA: 'អប់រំសិស្សឱ្យមានវិន័យស្វាហាប់ និងស្រឡាញ់សុខភាពរាងកាយ។',
+                    tMat: 'កញ្ចែ, ទីលានកីឡាស្អាត, ធុងទឹកស្អាត',
+                    sMat: 'សម្លៀកបំពាក់កីឡាសមរម្យ, ស្បែកជើងប៉ាតា',
+                    ref: 'សៀវភៅអប់រំកាយ និងកីឡា ក្រសួងអប់រំ យុវជន និងកីឡា',
+                    s1: { c: 'ពិនិត្យវត្តមាន និងសុខភាពសិស្សលើទីលាន', t: 'គ្រូផ្លុំកញ្ចែប្រមូលសិស្ស និងពិនិត្យសុខភាព (អ្នកណាឈឺក្បាលក្តៅខ្លួន)', s: 'សិស្សរត់ប្រមូលផ្តុំ និងរាយការណ៍សុខភាព' },
+                    s2: { c: 'ចលនាកំដៅសាច់ដុំ (ក ស្មា ចង្កេះ ជង្គង់ កជើង)', t: 'គ្រូនាំសិស្សធ្វើចលនាកំដៅសាច់ដុំ', s: 'សិស្សធ្វើតាមដោយភាពស្វាហាប់' },
+                    s3: { c: 'ខ្លឹមសារមេរៀន៖\n- របៀបតម្រង់ជួរឈរ (រៀបតាមកម្ពស់ ទាបទៅខ្ពស់)\n- បទបញ្ជា៖ ឈរត្រង់, តាមសណ្តាប់ធ្នាប់, សម្រាក\n- ចលនាលាតដៃដកដង្ហើមវែងៗ', t: 'គ្រូធ្វើជាគំរូ និងបញ្ជាដោយកញ្ចែ', s: 'សិស្សអនុវត្តតាមបទបញ្ជាយ៉ាងម៉ឺងម៉ាត់' },
+                    s4: { c: 'លេងល្បែងកម្សាន្ត «ទន្សាយផ្លោះ» ដើម្បីបង្កើនភាពរហ័សរហួន', t: 'គ្រូពន្យល់ក្បួនល្បែង និងធ្វើជាអាជ្ញាកណ្តាល', s: 'សិស្សចូលរួមលេងប្រកបដោយភាពរីករាយ' },
+                    s5: { c: 'ចលនាបន្ធូរសាច់ដុំ អនាម័យលាងដៃ និងផ្តាំផ្ញើ', t: 'គ្រូនាំសិស្សដកដង្ហើមវែងៗ សម្រាក និងណែនាំឱ្យលាងដៃស្អាត', s: 'សិស្សបន្ធូរសាច់ដុំ និងរៀបចំខ្លួន' }
+                }
+            }
+        };
+
+        // Initialize event listeners
+        window.addEventListener('DOMContentLoaded', () => {
+            // Set current Khmer date if empty
+            const today = new Date();
+            const khmerDateStr = `ថ្ងៃទី ${today.getDate()} ខែ ${today.getMonth() + 1} ឆ្នាំ ២០២៦`;
+            const dateInput = document.getElementById('lessonDate');
+            if (dateInput && (!dateInput.value || dateInput.value.includes('.....'))) {
+                dateInput.value = khmerDateStr;
+            }
+
+            // Sync live preview on all inputs
+            formFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', updatePreview);
+                    el.addEventListener('change', updatePreview);
+                }
+            });
+
+            updatePreview();
+            updateSavedCount();
+        });
+
+        // Trigger preset suggestion when Grade or Subject changes
+        function onGradeOrSubjectChange() {
+            autoFillSmart(false); // smoothly preview without intrusive alert
+        }
+
+        // Smart preset loader
+        function autoFillSmart(showNotification = true) {
+            const subject = document.getElementById('subject').value;
+            const grade = document.getElementById('grade').value;
+
+            const subGroup = primaryCurriculum[subject] || primaryCurriculum['គណវិទ្យា'];
+            const template = subGroup[grade] || subGroup['default'] || primaryCurriculum['គណវិទ្យា']['ថ្នាក់ទី៣'];
+
+            document.getElementById('chapter').value = template.chapter;
+            document.getElementById('lessonTitle').value = template.title;
+            document.getElementById('duration').value = template.duration || '២ ម៉ោង (៨០ នាទី)';
+            document.getElementById('objKnowledge').value = template.objK;
+            document.getElementById('objSkills').value = template.objS;
+            document.getElementById('objAttitudes').value = template.objA;
+            document.getElementById('teacherMaterials').value = template.tMat;
+            document.getElementById('studentMaterials').value = template.sMat;
+            document.getElementById('references').value = template.ref;
+
+            // 5 steps
+            for (let i = 1; i <= 5; i++) {
+                const stepKey = `s${i}`;
+                if (template[stepKey]) {
+                    document.getElementById(`step${i}_content`).value = template[stepKey].c;
+                    document.getElementById(`step${i}_teacher`).value = template[stepKey].t;
+                    document.getElementById(`step${i}_student`).value = template[stepKey].s;
+                }
+            }
+
+            updatePreview();
+            if (showNotification) {
+                showToast(`បានបញ្ចូលគំរូកិច្ចតែងការ៖ ${subject} ${grade} រួចរាល់!`);
+            }
+        }
+
+        // Update preview content in real-time
+        function updatePreview() {
+            // School & Meta
+            const school = document.getElementById('schoolName').value || 'សាលាបឋមសិក្សា';
+            document.getElementById('prev-school').innerText = school;
+            
+            const sub = document.getElementById('subject').value;
+            const gr = document.getElementById('grade').value;
+            document.getElementById('prev-subject-grade').innerText = `មុខវិជ្ជា៖ ${sub} | ថ្នាក់ទី៖ ${gr}`;
+            
+            document.getElementById('prev-chapter').innerText = document.getElementById('chapter').value;
+            document.getElementById('prev-duration').innerText = document.getElementById('duration').value;
+            document.getElementById('prev-lesson-title').innerText = document.getElementById('lessonTitle').value;
+            
+            const teacher = document.getElementById('teacherName').value || 'ឌឹម សារ៉ា';
+            document.getElementById('prev-teacher').innerText = teacher;
+            document.getElementById('prev-sign-teacher').innerText = teacher;
+
+            const acaYear = document.getElementById('academicYear').value || '២០២៥ - ២០២៦';
+            document.getElementById('prev-academic-year').innerText = acaYear;
+
+            const lessonDate = document.getElementById('lessonDate').value || 'ថ្ងៃទី ..... ខែ ..... ឆ្នាំ ២០២៦';
+            document.getElementById('prev-date-top').innerText = lessonDate;
+            document.getElementById('prev-sign-date').innerText = lessonDate;
+
+            // Objectives
+            document.getElementById('prev-obj-k').innerText = document.getElementById('objKnowledge').value;
+            document.getElementById('prev-obj-s').innerText = document.getElementById('objSkills').value;
+            document.getElementById('prev-obj-a').innerText = document.getElementById('objAttitudes').value;
+
+            // Materials
+            document.getElementById('prev-teacher-materials').innerText = document.getElementById('teacherMaterials').value;
+            document.getElementById('prev-student-materials').innerText = document.getElementById('studentMaterials').value;
+            document.getElementById('prev-references').innerText = document.getElementById('references').value;
+
+            // 5 Steps (for both Table & Card views)
+            for (let i = 1; i <= 5; i++) {
+                const cVal = document.getElementById(`step${i}_content`).value;
+                const tVal = document.getElementById(`step${i}_teacher`).value;
+                const sVal = document.getElementById(`step${i}_student`).value;
+
+                // Format multiline with <br>
+                const cFormatted = cVal.replace(/\n/g, '<br>');
+                const tFormatted = tVal.replace(/\n/g, '<br>');
+                const sFormatted = sVal.replace(/\n/g, '<br>');
+
+                // Table elements
+                const tbC = document.getElementById(`tb-step${i}-c`);
+                const tbT = document.getElementById(`tb-step${i}-t`);
+                const tbS = document.getElementById(`tb-step${i}-s`);
+                if (tbC) tbC.innerHTML = cFormatted;
+                if (tbT) tbT.innerHTML = tFormatted;
+                if (tbS) tbS.innerHTML = sFormatted;
+
+                // Card elements
+                const cdC = document.getElementById(`cd-step${i}-c`);
+                const cdT = document.getElementById(`cd-step${i}-t`);
+                const cdS = document.getElementById(`cd-step${i}-s`);
+                if (cdC) cdC.innerHTML = cFormatted;
+                if (cdT) cdT.innerHTML = tFormatted;
+                if (cdS) cdS.innerHTML = sFormatted;
+            }
+        }
+
+        // Layout switcher: Table vs Card
+        function setLayoutMode(mode) {
+            currentLayout = mode;
+            const tbContainer = document.getElementById('preview-table-container');
+            const cdContainer = document.getElementById('preview-card-container');
+            const btnTb = document.getElementById('btn-layout-table');
+            const btnCd = document.getElementById('btn-layout-card');
+
+            if (mode === 'table') {
+                tbContainer.classList.remove('hidden');
+                cdContainer.classList.add('hidden');
+                btnTb.className = 'px-2.5 py-1 rounded-md font-semibold bg-amber-500 text-slate-950 transition flex items-center gap-1';
+                btnCd.className = 'px-2.5 py-1 rounded-md font-medium text-slate-200 hover:text-white transition flex items-center gap-1';
+            } else {
+                tbContainer.classList.add('hidden');
+                cdContainer.classList.remove('hidden');
+                btnCd.className = 'px-2.5 py-1 rounded-md font-semibold bg-amber-500 text-slate-950 transition flex items-center gap-1';
+                btnTb.className = 'px-2.5 py-1 rounded-md font-medium text-slate-200 hover:text-white transition flex items-center gap-1';
+            }
+        }
+
+        // Export directly to Microsoft Word (.doc) with complete MoEYS styles and table borders
+        function exportToWord() {
+            const printContent = document.getElementById('printable-area').innerHTML;
+            const title = document.getElementById('lessonTitle').value || 'កិច្ចតែងការបង្រៀន';
+            const teacher = document.getElementById('teacherName').value || 'គ្រូបង្រៀន';
+
+            const header = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+                      xmlns:w='urn:schemas-microsoft-com:office:word' 
+                      xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset="utf-8">
+                    <title>${title}</title>
+                    <style>
+                        body {
+                            font-family: 'Kantumruy Pro', 'Battambang', 'Khmer OS Siemreap', Arial, sans-serif;
+                            font-size: 11pt;
+                            color: #111;
+                            line-height: 1.4;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin: 10px 0;
+                        }
+                        th, td {
+                            border: 1px solid #333333;
+                            padding: 6px 8px;
+                            font-size: 10.5pt;
+                            vertical-align: top;
+                        }
+                        th {
+                            background-color: #f0f4f8;
+                            font-weight: bold;
+                        }
+                        .font-moul {
+                            font-weight: bold;
+                            font-size: 13pt;
+                            text-align: center;
+                        }
+                        .text-center { text-align: center; }
+                        .text-right { text-align: right; }
+                        .text-left { text-align: left; }
+                        .font-bold { font-weight: bold; }
+                        .bg-slate-50, .bg-indigo-50 { background-color: #f8fafc; }
+                    </style>
+                </head>
+                <body>
+            `;
+            const footer = `</body></html>`;
+            const sourceHTML = header + printContent + footer;
+
+            const blob = new Blob(['\ufeff' + sourceHTML], {
+                type: 'application/msword;charset=utf-8'
+            });
+
+            const fileName = `កិច្ចតែងការ_${document.getElementById('subject').value}_${document.getElementById('grade').value}_${title.substring(0, 20)}.doc`;
+            
+            const downloadLink = document.createElement("a");
+            document.body.appendChild(downloadLink);
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = fileName;
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+
+            showToast('បានទាញយកជាឯកសារ Word (.doc) រួចរាល់!');
+        }
+
+        // Copy plain text content for Word or Telegram
+        function copyDocumentContent() {
+            const printable = document.getElementById('printable-area');
+            const text = printable.innerText;
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('បានចម្លងអត្ថបទកិច្ចតែងការចូលក្នុង clipboard រួចរាល់!');
+            }).catch(() => {
+                const el = document.createElement('textarea');
+                el.value = text;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                showToast('បានចម្លងអត្ថបទកិច្ចតែងការចូលក្នុង clipboard រួចរាល់!');
+            });
+        }
+
+        // Clear Form inputs
+        function clearForm() {
+            if (confirm('តើលោកគ្រូចង់សម្អាតទិន្នន័យក្នុងទម្រង់នេះទាំងអស់មែនទេ?')) {
+                formFields.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && id !== 'teacherName' && id !== 'schoolName' && id !== 'academicYear') {
+                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                            el.value = '';
+                        }
+                    }
+                });
+                updatePreview();
+                showToast('បានសម្អាតទម្រង់រួចរាល់!');
+            }
+        }
+
+        // Local Storage Management
+        function saveLessonPlanLocally() {
+            const planData = {};
+            formFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) planData[id] = el.value;
+            });
+
+            const title = planData.lessonTitle || 'កិច្ចតែងការគ្មានចំណងជើង';
+            const subject = planData.subject;
+            const grade = planData.grade;
+
+            let savedPlans = JSON.parse(localStorage.getItem('moye_lesson_plans_v2') || '[]');
+            
+            savedPlans.unshift({
+                id: Date.now(),
+                title: title,
+                subject: subject,
+                grade: grade,
+                date: new Date().toLocaleDateString('km-KH'),
+                timestamp: new Date().toISOString(),
+                data: planData
+            });
+
+            if (savedPlans.length > 50) savedPlans.pop(); // keep up to 50 plans
+
+            localStorage.setItem('moye_lesson_plans_v2', JSON.stringify(savedPlans));
+            updateSavedCount();
+            showToast('បានរក្សាទុកកិច្ចតែងការក្នុងម៉ាស៊ីនដោយជោគជ័យ!');
+        }
+
+        function updateSavedCount() {
+            const savedPlans = JSON.parse(localStorage.getItem('moye_lesson_plans_v2') || '[]');
+            const badge = document.getElementById('saved-count-badge');
+            if (badge) badge.innerText = savedPlans.length;
+        }
+
+        function loadSavedPlansModal() {
+            filterSavedPlans();
+            document.getElementById('savedModal').classList.remove('hidden');
+        }
+
+        function closeSavedPlansModal() {
+            document.getElementById('savedModal').classList.add('hidden');
+        }
+
+        function filterSavedPlans() {
+            const query = (document.getElementById('search-plans')?.value || '').toLowerCase();
+            const savedPlans = JSON.parse(localStorage.getItem('moye_lesson_plans_v2') || '[]');
+            const listEl = document.getElementById('saved-list');
+            listEl.innerHTML = '';
+
+            const filtered = savedPlans.filter(p => 
+                (p.title && p.title.toLowerCase().includes(query)) || 
+                (p.subject && p.subject.toLowerCase().includes(query)) ||
+                (p.grade && p.grade.toLowerCase().includes(query))
+            );
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<p class="text-slate-400 text-center py-6">មិនមានកិច្ចតែងការដែលត្រូវនឹងការស្វែងរកឡើយ។</p>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'p-3 bg-slate-50 hover:bg-indigo-50/70 border border-slate-200 rounded-xl flex justify-between items-center transition gap-2';
+                div.innerHTML = `
+                    <div class="flex-1 overflow-hidden cursor-pointer" onclick="loadPlan(${item.id})">
+                        <p class="font-bold text-indigo-950 truncate">${item.title}</p>
+                        <p class="text-[11px] text-slate-500">${item.subject} | ${item.grade} (${item.date || ''})</p>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="loadPlan(${item.id})" class="bg-indigo-700 hover:bg-indigo-800 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i> ផ្ទុក
+                        </button>
+                        <button onclick="deletePlan(${item.id})" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-2 py-1.5 rounded-lg text-xs font-bold transition" title="លុបចោល">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                listEl.appendChild(div);
+            });
+        }
+
+        function loadPlan(id) {
+            const savedPlans = JSON.parse(localStorage.getItem('moye_lesson_plans_v2') || '[]');
+            const found = savedPlans.find(p => p.id === id);
+            if (found && found.data) {
+                Object.keys(found.data).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el) el.value = found.data[key];
+                });
+                updatePreview();
+                closeSavedPlansModal();
+                showToast(`បានផ្ទុក៖ ${found.title}`);
+            }
+        }
+
+        function deletePlan(id) {
+            if (confirm('តើអ្នកពិតជាចង់លុបកិច្ចតែងការនេះមែនទេ?')) {
+                let savedPlans = JSON.parse(localStorage.getItem('moye_lesson_plans_v2') || '[]');
+                savedPlans = savedPlans.filter(p => p.id !== id);
+                localStorage.setItem('moye_lesson_plans_v2', JSON.stringify(savedPlans));
+                updateSavedCount();
+                filterSavedPlans();
+                showToast('បានលុបកិច្ចតែងការរួចរាល់!');
+            }
+        }
+
+        function clearAllSavedPlans() {
+            if (confirm('តើអ្នកពិតជាចង់លុបកិច្ចតែងការទាំងអស់ចេញពីម៉ាស៊ីនមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់ក្រោយបានឡើយ!')) {
+                localStorage.removeItem('moye_lesson_plans_v2');
+                updateSavedCount();
+                filterSavedPlans();
+                showToast('បានលុបកិច្ចតែងការទាំងអស់រួចរាល់!');
+            }
+        }
+
+        // Backup and Restore JSON file
+        function backupData() {
+            const savedPlans = localStorage.getItem('moye_lesson_plans_v2') || '[]';
+            const blob = new Blob([savedPlans], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `កិច្ចតែងការ_បម្រុងទុក_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            showToast('បានទាញយកទិន្នន័យបម្រុងទុកជា JSON រួចរាល់!');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        let existing = JSON.parse(localStorage.getItem('moye_lesson_plans_v2') || '[]');
+                        // merge avoiding duplicate ids
+                        const merged = [...imported, ...existing.filter(ex => !imported.some(im => im.id === ex.id))];
+                        localStorage.setItem('moye_lesson_plans_v2', JSON.stringify(merged));
+                        updateSavedCount();
+                        showToast(`បានបញ្ចូលកិច្ចតែងការ ${imported.length} ដោយជោគជ័យ!`);
+                    } else {
+                        alert('ឯកសារ JSON មិនត្រឹមត្រូវតាមទម្រង់!');
+                    }
+                } catch (err) {
+                    alert('មានបញ្ហាក្នុងការអានឯកសារ JSON!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Toast feedback
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-msg');
+            if (toast && msgEl) {
+                msgEl.innerText = msg;
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>
